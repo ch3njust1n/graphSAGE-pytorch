@@ -12,8 +12,8 @@ class DataCenter(object):
 		
 	def load_dataSet(self, dataSet='cora'):
 		if dataSet == 'cora':
-			cora_content_file = self.config['file_path.cora_content']
-			cora_cite_file = self.config['file_path.cora_cite']
+			cora_content_file = self.config['file_path']['cora_content']
+			cora_cite_file = self.config['file_path']['cora_cite']
 
 			feat_data = []
 			labels = [] # label sequence of node
@@ -52,8 +52,8 @@ class DataCenter(object):
 			setattr(self, dataSet+'_adj_lists', adj_lists)
 
 		elif dataSet == 'pubmed':
-			pubmed_content_file = self.config['file_path.pubmed_paper']
-			pubmed_cite_file = self.config['file_path.pubmed_cites']
+			pubmed_content_file = self.config['file_path']['pubmed_paper']
+			pubmed_cite_file = self.config['file_path']['pubmed_cites']
 
 			feat_data = []
 			labels = [] # label sequence of node

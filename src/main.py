@@ -2,8 +2,8 @@ import sys
 import os
 import torch
 import argparse
-import pyhocon
 import random
+import configparser
 
 from src.dataCenter import *
 from src.utils import *
@@ -23,7 +23,7 @@ parser.add_argument('--learn_method', type=str, default='sup')
 parser.add_argument('--unsup_loss', type=str, default='normal')
 parser.add_argument('--max_vali_f1', type=float, default=0)
 parser.add_argument('--name', type=str, default='debug')
-parser.add_argument('--config', type=str, default='./src/experiments.conf')
+parser.add_argument('--config', type=str, default='./src/experiments.ini')
 args = parser.parse_args()
 
 if torch.cuda.is_available():
@@ -43,7 +43,9 @@ if __name__ == '__main__':
 	torch.cuda.manual_seed_all(args.seed)
 
 	# load config file
-	config = pyhocon.ConfigFactory.parse_file(args.config)
+	# config = pyhocon.ConfigFactory.parse_file(args.config)
+	config = configparser.ConfigParser()
+	config.read(args.config)
 
 	# load data
 	ds = args.dataSet
@@ -51,11 +53,11 @@ if __name__ == '__main__':
 	dataCenter.load_dataSet(ds)
 	features = torch.FloatTensor(getattr(dataCenter, ds+'_feats')).to(device)
 
-	graphSage = GraphSage(config['setting.num_layers'], features.size(1), config['setting.hidden_emb_size'], features, getattr(dataCenter, ds+'_adj_lists'), device, gcn=args.gcn, agg_func=args.agg_func)
+	graphSage = GraphSage(int(config['setting']['num_layers']), features.size(1), int(config['setting']['hidden_emb_size']), features, getattr(dataCenter, ds+'_adj_lists'), device, gcn=args.gcn, agg_func=args.agg_func)
 	graphSage.to(device)
 
 	num_labels = len(set(getattr(dataCenter, ds+'_labels')))
-	classification = Classification(config['setting.hidden_emb_size'], num_labels)
+	classification = Classification(int(config['setting']['hidden_emb_size']), num_labels)
 	classification.to(device)
 
 	unsupervised_loss = UnsupervisedLoss(getattr(dataCenter, ds+'_adj_lists'), getattr(dataCenter, ds+'_train'), device)
